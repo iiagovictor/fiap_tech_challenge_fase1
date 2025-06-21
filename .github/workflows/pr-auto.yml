@@ -46,7 +46,7 @@ jobs:
       - name: Checkout da branch que recebeu o push
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Criar PR automático para main
         uses: devops-infra/action-pull-request@v0.5.0
