@@ -1,0 +1,5 @@
+fastapi==0.115.13
+pandas==2.2.3
+beautifulsoup4==4.13.3
+requests==2.32.3
+flake8==7.3.0
