@@ -40,9 +40,9 @@ jobs:
         uses: devops-infra/action-pull-request@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: ${{ github.ref_name }}
+          source_branch: ${{ github.head_ref || github.ref_name }}
           target_branch: main
-          title: 'PR automático: Atualização da branch ${{ github.ref_name }} para main'
+          title: 'PR automático: Atualização da branch ${{ github.head_ref || github.ref_name }} para main'
           body: |
             Este PR foi criado automaticamente após a validação do Flake8.
 
