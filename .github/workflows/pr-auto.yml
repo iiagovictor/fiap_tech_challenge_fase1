@@ -46,13 +46,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create Pull Request to main
+      - name: Criar PR automático para main
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: 'chore: open PR to main'
-          branch: ${{ github.ref_name }}
-          title: 'Auto PR - Merge ${{ github.ref_name }} into main'
-          body: |
-            Este PR foi criado automaticamente para merge do branch `${{ github.ref_name }}` para `main`.
+          branch: ${{ github.head_ref }}
+          title: 'Auto PR - Merge ${{ github.head_ref }} into main'
+          body: 'Este PR foi criado automaticamente para merge do branch `${{ github.head_ref }}` para `main`.'
           base: main
           delete-branch: false
