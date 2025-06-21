@@ -6,6 +6,7 @@ app = FastAPI(
     description="API de Consultas de Livros com FASTAPI"
 )
 
+
 @app.get("/")
 async def home():
     return "Página Inicial!"
