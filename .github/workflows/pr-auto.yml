@@ -43,15 +43,18 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout da branch que recebeu o push
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - name: Criar PR automático para main
-        uses: peter-evans/create-pull-request@v5
+        uses: devops-infra/action-pull-request@v0.5.0
         with:
-          commit-message: 'chore: open PR to main'
-          branch: ${{ github.head_ref }}
-          title: 'Auto PR - Merge ${{ github.head_ref }} into main'
-          body: 'Este PR foi criado automaticamente para merge do branch `${{ github.head_ref }}` para `main`.'
-          base: main
-          delete-branch: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: ${{ github.ref_name }}
+          target_branch: main
+          title: 'Auto PR - Merge ${{ github.ref_name }} into main'
+          body: |
+            Este PR foi criado automaticamente para merge do branch `${{ github.ref_name }}` para `main`.
+          draft: false
