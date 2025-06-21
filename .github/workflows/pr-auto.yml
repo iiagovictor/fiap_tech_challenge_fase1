@@ -37,29 +37,22 @@ jobs:
     name: Criar PR automático para main
     runs-on: ubuntu-latest
     needs: build
+    
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: pull-request
-        id: open-pr
-        uses: diillson/auto-pull-request@v1.0.1
+      - name: Create Pull Request to main
+        uses: peter-evans/create-pull-request@v5
         with:
-          destination_branch: "main"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: output-url
-        run: echo ${{ steps.open-pr.outputs.pr_url }}
-
-      - name: output-number
-        run: echo ${{ steps.open-pr.outputs.pr_number }}
-
-      - name: output-created
-        run: echo ${{ steps.open-pr.outputs.pr_created }}
-
-      - name: output-has-changed-files
-        run: echo ${{ steps.open-pr.outputs.has_changed_files }}
-
-      - name: Notificar conclusão
-        run: echo "PR automático criado com sucesso para a branch main!"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: open PR to main'
+          branch: ${{ github.ref_name }}
+          title: 'Auto PR - Merge ${{ github.ref_name }} into main'
+          body: |
+            Este PR foi criado automaticamente para merge do branch `${{ github.ref_name }}` para `main`.
+          base: main
+          delete-branch: false
