@@ -1,0 +1,52 @@
+name: PR Automático para main
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  pr_auto:
+    name: Criar PR automático para main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Confiurando Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+
+      - name: Instalando dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Executando Flake8
+        run: |
+          flake8 $(git ls-files '*.py') > flake8-report.txt || true
+
+      - name: Exibir resultado do Flake8
+        run: |
+          if [ -s flake8-report.txt ]; then
+            echo "❌ Flake8 apontou os seguintes problemas:"
+            cat flake8-report.txt
+            exit 1
+          else
+            echo "✅ Flake8: Nenhum problema encontrado. Código conforme PEP8!"
+          fi
+
+      - name: Criar Pull Request automático para main
+        uses: devops-infra/action-pull-request@v0.5.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: ${{ github.ref_name }}
+          target_branch: main
+          title: 'PR automático: Atualização da branch ${{ github.ref_name }} para main'
+          body: |
+            Este PR foi criado automaticamente após a validação do Flake8.
+
+      - name: Notificar conclusão
+        run: echo "PR automático criado com sucesso para a branch main!"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
