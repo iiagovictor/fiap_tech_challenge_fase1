@@ -36,13 +36,17 @@ jobs:
             echo "✅ Flake8: Nenhum problema encontrado. Código conforme PEP8!"
           fi
 
+      - name: Extrair nome da branch
+        id: extract_branch
+        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
       - name: Criar Pull Request automático para main
         uses: devops-infra/action-pull-request@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: ${{ github.head_ref || github.ref_name }}
+          source_branch: ${{ steps.extract_branch.outputs.branch_name }}
           target_branch: main
-          title: 'PR automático: Atualização da branch ${{ github.head_ref || github.ref_name }} para main'
+          title: 'PR automático: Atualização da branch ${{ steps.extract_branch.outputs.branch_name }} para main'
           body: |
             Este PR foi criado automaticamente após a validação do Flake8.
 
