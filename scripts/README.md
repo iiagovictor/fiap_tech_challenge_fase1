@@ -35,4 +35,4 @@ Cada livro extraído contém os seguintes campos:
 
 - O script utiliza multithreading para acelerar a coleta dos detalhes dos livros.
 - Caso algum livro não possua descrição, o campo será `null` no JSON/CSV.
-- O scraping respeita a estrutura pública do site Books to Scrape.
+- O scraping respeita a estrutura pública do site [Books to Scrape](https://books.toscrape.com/).
