@@ -1,4 +1,4 @@
-#Environments
+flake8-report.txt
 .env
 .venv
 env/
@@ -6,3 +6,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+/data
+*.ipynb_checkpoints
+*.ipynb
+__pycache__/
