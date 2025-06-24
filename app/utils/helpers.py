@@ -19,6 +19,7 @@ def get_csv_data(path_file):
 def get_only_categories(df):
     try:
         df = df["category"].drop_duplicates()
+        lista_categorias = df.tolist()
     except Exception as error:
         return  error
-    return df
+    return lista_categorias
