@@ -12,8 +12,11 @@ async def health():
                 detail="Arquivo CSV não está populado."
             )
         return {
-            "Status da API": 200,
-            "Quantidade de registros no CSV": len(dados_csv)
+            "Success": True,
+            "API status": 200,
+            "Data": {
+                "Total records found in books.CSV": len(dados_csv)
+                }
         }
     
     except HTTPException as http_error:
