@@ -7,7 +7,6 @@ router = APIRouter()
 async def health():
     try:
         if dados_csv.empty:
-
             raise HTTPException(
                 status_code=400,
                 detail="Arquivo CSV não está populado."
@@ -16,6 +15,10 @@ async def health():
             "Status da API": 200,
             "Quantidade de registros no CSV": len(dados_csv)
         }
+    
+    except HTTPException as http_error:
+        raise http_error 
+
     except Exception as error:
         raise   HTTPException(
             status_code=500,
