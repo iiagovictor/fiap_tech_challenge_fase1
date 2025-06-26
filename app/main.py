@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.v1 import endpoint_categoria, endpoint_health
+from app.api.v1 import endpoint_categoria, endpoint_health, endpoint_retorna_books_por_id
 
 app = FastAPI(
     title="API Categorias",
@@ -8,4 +8,6 @@ app = FastAPI(
 )
 
 app.include_router(endpoint_categoria.router)
+app.include_router(endpoint_retorna_books_por_id.router)
 app.include_router(endpoint_health.router)
+
