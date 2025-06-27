@@ -23,3 +23,7 @@ def get_only_categories(df):
     except Exception as error:
         return  error
     return lista_categorias
+
+def get_rating(df, name_column,required_number, default_response):
+    rating = int(df[name_column].value_counts().get(required_number,default_response))
+    return rating
