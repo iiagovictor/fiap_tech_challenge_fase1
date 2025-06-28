@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from app.utils.helpers import get_csv_data, get_unique_items
+from app.utils.helpers import get_unique_items
+from app.api.v1.endpoint_categoria import dados_csv
 
 router = APIRouter()
-
-dados_csv = get_csv_data(rf'data\books.csv')
 
 @router.get("/api/v1/books:")
 async def get_books():
