@@ -24,6 +24,14 @@ def get_only_categories(df):
         return  error
     return lista_categorias
 
+def get_only_books(df):
+    try:
+        df = df["title"].drop_duplicates()
+        lista_livros = df.tolist()
+    except Exception as error:
+        return  error
+    return lista_livros
+
 def get_rating(df, name_column,required_number, default_response):
     rating = int(df[name_column].value_counts().get(required_number,default_response))
     return rating
