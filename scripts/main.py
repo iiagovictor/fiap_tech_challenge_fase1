@@ -289,7 +289,8 @@ class BooksToScrape():
                 os.makedirs(output_dir, exist_ok=True)
                 logging.info(f"Directory '{output_dir}' created.")
             except Exception as e:
-                logging.error(f"failed to create directory '{output_dir}': {e}")
+                logging.error(f"failed to create directory \
+                              '{output_dir}': {e}")
 
         df = pd.DataFrame(books)
         df.to_csv(filename, index=False, sep=';', encoding='utf-8')
