@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.utils.helpers import get_csv_data, get_only_books, get_unique_items
+from app.utils.helpers import get_csv_data, get_unique_items
 
 router = APIRouter()
 
