@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import os
 
+logging.basicConfig(level=logging.INFO)
+
 
 class BooksToScrape():
 
@@ -283,9 +285,12 @@ class BooksToScrape():
         """
         output_dir = os.path.dirname(filename)
         if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir) 
-            logging.info(f"Directory '{output_dir}' created.")
-        
+            try:
+                os.makedirs(output_dir, exist_ok=True)
+                logging.info(f"Directory '{output_dir}' created.")
+            except Exception as e:
+                logging.error(f"failed to create directory '{output_dir}': {e}")
+
         df = pd.DataFrame(books)
         df.to_csv(filename, index=False, sep=';', encoding='utf-8')
         logging.info(f"Books saved to {filename}")
