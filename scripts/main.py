@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
+import os
 
 
 class BooksToScrape():
@@ -280,6 +281,11 @@ class BooksToScrape():
             filename (str): O nome do arquivo CSV onde os dados serão salvos.
             Padrão é "books.csv".
         """
+        output_dir = os.path.dirname(filename)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir) 
+            logging.info(f"Directory '{output_dir}' created.")
+        
         df = pd.DataFrame(books)
         df.to_csv(filename, index=False, sep=';', encoding='utf-8')
         logging.info(f"Books saved to {filename}")
