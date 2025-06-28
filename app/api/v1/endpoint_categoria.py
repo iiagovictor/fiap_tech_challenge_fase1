@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.utils.helpers import get_csv_data, get_only_categories
+from app.utils.helpers import get_csv_data, get_only_categories, get_unique_items
 
 router = APIRouter()
 
@@ -15,7 +15,7 @@ async def home():
 @router.get("/api/v1/categories")
 async def get_categories():
     try:
-        dados_filtrados = get_only_categories(dados_csv)
+        dados_filtrados = get_unique_items(dados_csv, "category")
         if len(dados_filtrados) == 0:
             raise HTTPException(
                 status_code=400,
