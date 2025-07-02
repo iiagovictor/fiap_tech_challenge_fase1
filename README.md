@@ -1,13 +1,54 @@
 # FIAP - TechChallenge - Fase 1
 
-## Conteudo dessa branch:
+## O problema
 
-No momento nessa branch esta sendo desenvolvido os endpoint de categorias, o de health, o endpoint para trazer um livro pelo id e o endpoint que traz um overview sobre os dados do arquivo csv.
+**Desafio**: Criação de uma API Pública para Consulta de Livros.
 
-O endpoint de categorias deve retornar todas as categorias dos livros presentes no arquivo books.csv.
+Você foi contratado(a) como Engenheiro(a) de Machine Learning para um
+projeto de recomendação de livros. A empresa está em sua fase inicial e ainda
+não possui uma base de dados estruturada.
+Seu primeiro desafio será montar a infraestrutura de extração,
+transformação e disponibilização de dados via API pública para que cientistas de
+dados e serviços de recomendação possam usar esses dados com facilidade.
+Assim, seu objetivo será desenvolver um pipeline completo de dados e
+uma API pública para servir esses dados, pensando na escalabilidade e
+reusabilidade futura em modelos de machine learning.
 
-Já o endpoint de health deve retornar o status da API, se esta sendo possível trazer os dados do arquivo books.csv ou não.
+## Requisitos
 
-O endpoint de book_id retorna o livro pesquisado pelo id.
+- Python 3.8+
+- pip
 
-O endpoint de overview traz o numero de livros, a media dos preços considerando o preça + taxa e o numero de vezes que as notas foram dadas para os livros( notas variando entre 1 e 5).
+---
+
+## Instalação
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/iiagovictor/fiap_tech_challenge_fase1.git
+   cd fiap_tech_challenge_fase1
+   ```
+
+2. **Crie e ative o ambiente virtual:**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. **Instale as dependências:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+## Qualidade de Código
+
+Este projeto segue o padrão PEP8 e utiliza o [Flake8](https://flake8.pycqa.org/) para análise de qualidade e lint do código Python.
+
+Para rodar o Flake8 localmente:
+
+```bash
+flake8 . --exclude=.venv
+```
+
+## Componentes
+
+[Sistema de Web Scraping](scripts/README.md)
