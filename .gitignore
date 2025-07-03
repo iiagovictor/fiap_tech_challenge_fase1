@@ -1,4 +1,3 @@
-#Environments
 flake8-report.txt
 .env
 .venv

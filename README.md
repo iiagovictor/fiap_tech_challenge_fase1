@@ -52,3 +52,4 @@ flake8 . --exclude=.venv
 ## Componentes
 
 [Sistema de Web Scraping](scripts/README.md)
+[API](api/readme.md)
