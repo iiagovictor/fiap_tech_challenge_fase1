@@ -1,5 +1,11 @@
 from fastapi import FastAPI
-from app.api.v1 import endpoint_categoria, endpoint_health, endpoint_retorna_books_por_id, endpoint_overview, endpoint_lista_livros_disponiveis
+from app.api.v1 import (
+    endpoint_categoria,
+    endpoint_health,
+    endpoint_retorna_books_por_id,
+    endpoint_overview,
+    endpoint_lista_livros_disponiveis,
+)
 
 
 app = FastAPI(

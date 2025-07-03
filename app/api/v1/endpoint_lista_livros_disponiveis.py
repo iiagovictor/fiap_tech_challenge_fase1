@@ -4,10 +4,11 @@ from app.api.v1.endpoint_categoria import dados_csv
 
 router = APIRouter()
 
-@router.get("/api/v1/books:")
+
+@router.get("/api/v1/books")
 async def get_books():
     try:
-        livros_filtrados = get_unique_items(dados_csv,"title")
+        livros_filtrados = get_unique_items(dados_csv, "title")
         if len(livros_filtrados) == 0:
             raise HTTPException(
                 status_code=400,
@@ -16,15 +17,15 @@ async def get_books():
         return {
             "Success": True,
             "Message": "Livros retornadas com sucesso.",
-            "Data":{
-                "Livros":livros_filtrados
+            "Data": {
+                "Livros": livros_filtrados
             }
         }
     except HTTPException as http_error:
-        raise http_error 
+        raise http_error
 
     except Exception as error:
-        raise   HTTPException(
+        raise HTTPException(
             status_code=500,
             detail=f"Erro interno : {error}"
         )
