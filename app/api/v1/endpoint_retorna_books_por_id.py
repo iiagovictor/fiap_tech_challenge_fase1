@@ -12,7 +12,7 @@ async def get_book_by_id(book_id: int):
             "Success": True,
             "Message": "Categorias retornadas com sucesso.",
             "Data": {
-                "Book": resultado.to_dict()
+                "Book": resultado.to_dict(orient="records")[0]
             }
         }
     else:

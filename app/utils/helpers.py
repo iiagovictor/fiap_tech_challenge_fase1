@@ -17,7 +17,7 @@ def get_csv_data(path_file):
         )
         df['tax'] = df['tax'].apply(lambda x: abs(x))
         # Preenchendo valores vazios na coluna de categoria
-        df['category'] = df['category'].fillna("--")
+        df = df.fillna("--")
     except Exception as error:
         return error
     return df
