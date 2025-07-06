@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from app.api.v1.endpoint_categoria import (
     dados_csv,
-)  # seu DataFrame com colunas 'title' e 'category'
+)
 
 router = APIRouter()
 
