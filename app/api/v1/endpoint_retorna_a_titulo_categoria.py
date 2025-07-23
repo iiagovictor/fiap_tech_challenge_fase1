@@ -12,8 +12,8 @@ router = APIRouter()
 # /api/v1/books/search?category=Fantasy
 async def search_books(
     title_param: str | None = Query(
-        default=None, alias="title", description="Título ou parte do título do livro"
-    ),
+        default=None, alias="title",
+        description="Título ou parte do título do livro"),
     category_param: str | None = Query(
         default=None, alias="category", description="Categoria do livro"
     ),
@@ -28,7 +28,11 @@ async def search_books(
 
     if title_param:
         df_filtrado = df_filtrado[
-            df_filtrado["title"].str.contains(title_param, case=False, na=False)
+            df_filtrado["title"].str.contains(
+                title_param,
+                case=False,
+                na=False
+            )
         ]
 
     if category_param:
@@ -40,10 +44,12 @@ async def search_books(
         if title_param and category_param:
             raise HTTPException(
                 status_code=404,
-                detail="Livro não encontrado ou não pertence à categoria informada.",
+                detail="Livro não encontrado"
+                "ou não pertence à categoria informada.",
             )
         elif title_param:
-            raise HTTPException(status_code=404, detail="Livro não encontrado.")
+            raise HTTPException(status_code=404,
+                                detail="Livro não encontrado.")
         else:
             raise HTTPException(
                 status_code=404,
