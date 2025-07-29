@@ -7,7 +7,6 @@ from app.api.v1 import (
     endpoint_lista_livros_disponiveis,
 )
 
-
 app = FastAPI(
     title="Our FastAPI API",
     version="1.0.0",
