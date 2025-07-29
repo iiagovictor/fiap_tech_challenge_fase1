@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.api.v1.endpoint_categoria import dados_csv
 
-router = APIRouter()
+router = APIRouter(tags=["Core"])
 
 
 @router.get("/api/v1/health")

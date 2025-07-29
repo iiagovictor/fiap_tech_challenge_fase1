@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.utils.helpers import get_unique_items
 from app.api.v1.endpoint_categoria import dados_csv
 
-router = APIRouter()
+router = APIRouter(tags=["Core"])
 
 
 @router.get("/api/v1/books")

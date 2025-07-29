@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.utils.helpers import get_csv_data, get_unique_items
 
-router = APIRouter()
+router = APIRouter(tags=["Core"])
 
 dados_csv = get_csv_data('./data/books.csv')
 # dados_csv = get_csv_data('data/books_empty.csv')
