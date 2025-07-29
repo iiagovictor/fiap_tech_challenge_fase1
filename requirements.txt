@@ -5,3 +5,4 @@ requests==2.32.3
 flake8==7.3.0
 uvicorn==0.34.3
 SQLAlchemy>=2.0,<3.0
+alembic==1.16.4
