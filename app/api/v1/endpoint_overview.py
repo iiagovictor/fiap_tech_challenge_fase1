@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.api.v1.endpoint_categoria import dados_csv
 from app.utils import helpers
 
-router = APIRouter()
+router = APIRouter(tags=["Insights"])
 
 
 @router.get('/api/v1/stats/overview')
