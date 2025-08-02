@@ -1,9 +1,10 @@
-from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey
+from sqlalchemy import create_engine, Column, String, Integer, Boolean
 from sqlalchemy.orm import declarative_base
+from app.config import Config
 
-db = create_engine("sqlite:///banco.db")
-
+db = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Base = declarative_base()
+
 
 class Usuario(Base):
     __tablename__ = "usuarios"
