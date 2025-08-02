@@ -46,7 +46,7 @@ Este projeto segue o padrão PEP8 e utiliza o [Flake8](https://flake8.pycqa.org/
 Para rodar o Flake8 localmente:
 
 ```bash
-flake8 . --exclude=.venv
+flake8 . --exclude=.venv,alembic
 ```
 
 ## Componentes
