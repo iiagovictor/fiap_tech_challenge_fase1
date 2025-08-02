@@ -57,3 +57,38 @@ async def get_overview_data(user=Depends(get_current_user)):
             status_code=500,
             detail=f"Erro interno : {error}"
         )
+
+
+@router.get("/api/v1/stats/categories")
+async def get_stats_categories(user=Depends(get_current_user)):
+    """### 📊 Estatísticas por Categoria
+    Este endpoint retorna o número de livros por categoria e a média de preços por categoria.
+
+    #### Como usar:
+    - Faça uma requisição GET para `/api/v1/stats/categories`.
+    - A resposta incluirá o número de livros por categoria e a média de preços por categoria.
+    - É necessário enviar o token JWT no header Authorization: Bearer <token>.
+    """  # noqa: E501
+    try:
+        if len(dados_csv) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Arquivo CSV não está populado."
+            )
+        number_books = dados_csv['category'].value_counts().to_dict()
+        average_price = dados_csv.groupby(
+            'category')['price_including_tax'].mean().round(2)
+        return {
+                "success": True,
+                "message": "Valores retornados com sucesso",
+                "data": {
+                    "numberBooks": number_books,
+                    "averagePrice": average_price
+                }
+        }
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro interno : {error}"
+        )

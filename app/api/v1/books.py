@@ -159,6 +159,42 @@ async def get_search_books(
     }
 
 
+@router.get("/api/v1/books/top-rated")
+async def get_top_rated_books(user=Depends(get_current_user)):
+    """### 🌟 Livros Mais Bem Avaliados
+    Este endpoint retorna os livros mais bem avaliados, ou seja, aqueles que possuem a maior
+    nota de avaliação (review_rating) igual a 5.
+
+    #### Como usar:
+    - Faça uma requisição GET para `/api/v1/books/top-rated`.
+    - A resposta incluirá um dicionário com os títulos dos livros e suas respectivas avaliações
+    - É necessário enviar o token JWT no header Authorization: Bearer <token>.
+    """  # noqa: E501
+    try:
+        if len(dados_csv) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Arquivo CSV não está populado."
+            )
+        top_books = dados_csv[['title', 'review_rating']].query(
+            "review_rating == 5")
+        top_books = top_books.set_index('title')['review_rating'].to_dict()
+
+        return {
+                "success": True,
+                "Messamessagege": "Valores retornados com sucesso",
+                "data": {
+                    "Top rated books": top_books
+                }
+        }
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro interno : {error}"
+        )
+
+
 @router.get("/api/v1/books/{book_id}", response_model=BookDetailResponse)
 async def get_book_id(book_id: int, user=Depends(get_current_user)):
     """### 📖 Detalhes do Livro por ID
