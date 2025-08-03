@@ -4,15 +4,7 @@
 
 **Desafio**: Criação de uma API Pública para Consulta de Livros.
 
-Você foi contratado(a) como Engenheiro(a) de Machine Learning para um
-projeto de recomendação de livros. A empresa está em sua fase inicial e ainda
-não possui uma base de dados estruturada.
-Seu primeiro desafio será montar a infraestrutura de extração,
-transformação e disponibilização de dados via API pública para que cientistas de
-dados e serviços de recomendação possam usar esses dados com facilidade.
-Assim, seu objetivo será desenvolver um pipeline completo de dados e
-uma API pública para servir esses dados, pensando na escalabilidade e
-reusabilidade futura em modelos de machine learning.
+Você foi contratado(a) como Engenheiro(a) de Machine Learning para um projeto de recomendação de livros. A empresa está em sua fase inicial e ainda não possui uma base de dados estruturada. Seu primeiro desafio será montar a infraestrutura de extração, transformação e disponibilização de dados via API pública para que cientistas de dados e serviços de recomendação possam usar esses dados com facilidade. Assim, seu objetivo será desenvolver um pipeline completo de dados e uma API pública para servir esses dados, pensando na escalabilidade e reusabilidade futura em modelos de machine learning.
 
 ## Requisitos
 
@@ -81,6 +73,25 @@ Para rodar o Flake8 localmente:
 ```bash
 flake8 . --exclude=.venv,alembic
 ```
+
+---
+
+## Como executar o Dashboard (Streamlit)
+
+O dashboard foi desenvolvido para **Monitoramento & Analytics**:
+- Logs estruturados de todas as chamadas.
+- Métricas de performance da API.
+- Dashboard simples de uso (Streamlit recomendado).
+
+Execute o seguinte comando na raiz do projeto para iniciar o dashboard interativo com Streamlit:
+
+```bash
+streamlit run dashboard/main_dash.py
+```
+
+O dashboard estará disponível em: [http://localhost:8501](http://localhost:8501)
+
+---
 
 ## Componentes
 
