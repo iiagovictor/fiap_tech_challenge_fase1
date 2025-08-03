@@ -7,5 +7,6 @@ class Solution(object):
         last = digits[-1]
         print(last)
 
+
 # Example usage:
-print(Solution().plusOne([1,2,3]))  
+print(Solution().plusOne([1, 2, 3]))

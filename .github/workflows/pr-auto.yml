@@ -22,7 +22,7 @@ jobs:
       - name: Executando Flake8
         id: flake8
         run: |
-          flake8 $(git ls-files '*.py') > flake8-report.txt || true
+          flake8 $(git ls-files '*.py' ':!:alembic/*') > flake8-report.txt || true
       - name: Exibir resultado do Flake8
         run: |
           if [ -s flake8-report.txt ]; then

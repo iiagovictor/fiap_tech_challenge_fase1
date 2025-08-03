@@ -10,8 +10,7 @@ import os
 logging.basicConfig(level=logging.INFO)
 
 
-class BooksToScrape():
-
+class BooksToScrape:
     """Classe para realizar web scraping de livros do site "Books to Scrape".
 
     Esta classe contém métodos para obter o conteúdo HTML de uma URL,
@@ -66,10 +65,7 @@ class BooksToScrape():
     def __init__(self):
         self.base_url = "http://books.toscrape.com"
 
-    def _get_soup(
-            self,
-            url: str
-            ) -> BeautifulSoup:
+    def _get_soup(self, url: str) -> BeautifulSoup:
         """Obtém o conteúdo HTML de uma URL e retorna um objeto BeautifulSoup.
         Esta função faz uma requisição HTTP GET para a URL fornecida, define
         a codificação como UTF-8, e utiliza BeautifulSoup para analisar o
@@ -85,14 +81,11 @@ class BooksToScrape():
             HTML da página.
         """
         response = requests.get(url)
-        response.encoding = 'utf-8'
+        response.encoding = "utf-8"
         response.raise_for_status()
         return BeautifulSoup(response.text, "html.parser")
 
-    def _parse_date(
-            self,
-            date_str: str
-            ) -> datetime:
+    def _parse_date(self, date_str: str) -> datetime:
         """Converte uma string de data no formato "dd MMM yyyy HH:mm"
         para um objeto datetime. Esta função remove sufixos como "st", "nd",
         "rd" e "th" dos dias antes de fazer a conversão.
@@ -104,13 +97,10 @@ class BooksToScrape():
         -------
             datetime: Um objeto datetime representando a data e hora.
         """
-        date_str = re.sub(r'(\d{1,2})(st|nd|rd|th)', r'\1', date_str)
+        date_str = re.sub(r"(\d{1,2})(st|nd|rd|th)", r"\1", date_str)
         return datetime.strptime(date_str, "%d %b %Y %H:%M")
 
-    def _word_to_int(
-            self,
-            word: str
-            ) -> int:
+    def _word_to_int(self, word: str) -> int:
         """Converte uma palavra representando um número em seu valor
         inteiro correspondente.
 
@@ -122,19 +112,10 @@ class BooksToScrape():
             int: O valor inteiro correspondente à palavra, ou None se
             a palavra não for reconhecida.
         """
-        mapping = {
-            "One": 1,
-            "Two": 2,
-            "Three": 3,
-            "Four": 4,
-            "Five": 5
-        }
+        mapping = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
         return mapping.get(word, None)
 
-    def _fetch_book_details(
-            self,
-            suffix_url: str
-            ) -> dict:
+    def _fetch_book_details(self, suffix_url: str) -> dict:
         """Obtém os detalhes de um livro a partir de uma URL específica.
         Esta função faz uma requisição HTTP GET para a URL do livro, analisa
         o conteúdo HTML e extrai informações como título, descrição, categoria,
@@ -154,9 +135,7 @@ class BooksToScrape():
         """
         try:
             book_url = f"{self.base_url}/catalogue/{suffix_url}"
-            book_details = self._get_soup(
-                url=book_url
-                )
+            book_details = self._get_soup(url=book_url)
             book_id = int(suffix_url.replace("/index.html", "").split("_")[-1])
             title = (
                 book_details.find("div", class_="product_main")
@@ -183,8 +162,9 @@ class BooksToScrape():
                 .get_text(strip=True)
             )
             review_rating = self._word_to_int(
-                word=book_details.find("div", class_="product_main")
-                .find("p", class_="star-rating")["class"][1]
+                word=book_details.find("div", class_="product_main").find(
+                    "p", class_="star-rating"
+                )["class"][1]
             )
             suffix_image_url = (
                 book_details.find("div", class_="item active")
@@ -205,17 +185,18 @@ class BooksToScrape():
                 "review_rating": review_rating,
                 "category": category,
                 "product_upc": details["UPC"],
-                "currency": 'GBP'
-                if details["Price (incl. tax)"][:1] == '£'
-                else 'UNKNOWN',
+                "currency": (
+                    "GBP" if details["Price (incl. tax)"][:1] == "£" else "UNKNOWN"  # noqa: E501
+                ),
                 "price_including_tax": float(details["Price (incl. tax)"][1:]),
                 "price_excluding_tax": float(details["Price (excl. tax)"][1:]),
                 "tax": float(details["Tax"][1:]),
-                "number_available": int(details['Availability'].split('(')[1]
-                                        .split(' ')[0]),
+                "number_available": int(
+                    details["Availability"].split("(")[1].split(" ")[0]
+                ),
                 "created_at": created_at,
                 "image_url": image_url,
-                "url": book_url
+                "url": book_url,
             }
             return book_info
         except Exception as e:
@@ -241,38 +222,30 @@ class BooksToScrape():
             if not url:
                 url = f"{self.base_url}/catalogue/page-1.html"
             logging.info(f"Fetching books from {url}")
-            soup = self._get_soup(
-                url=url
-                )
+            soup = self._get_soup(url=url)
             books = soup.select("article.product_pod")
             suffix_urls = [
-                book.find("div", class_="image_container").find("a")
-                    .get("href")
+                book.find("div", class_="image_container").find("a").get("href")  # noqa: E501
                 for book in books
             ]
             with ThreadPoolExecutor(max_workers=20) as executor:
                 futures = [
-                    executor.submit(
-                        self._fetch_book_details,
-                        suffix_url=suffix_url
-                        )
+                    executor.submit(self._fetch_book_details, suffix_url=suffix_url)  # noqa: E501
                     for suffix_url in suffix_urls
-                    ]
+                ]
                 for future in futures:
                     result.append(future.result())
             next_link = soup.select_one("li.next > a")
             if next_link:
-                next_page = next_link.get('href')
+                next_page = next_link.get("href")
                 url = f"{self.base_url}/catalogue/{next_page}"
             else:
                 break
         return result
 
     def save_books_to_csv(
-            self,
-            books: list,
-            filename: str = "data/books.csv"
-            ) -> None:
+        self, books: list, filename: str = "app/data/books.csv"
+    ) -> None:
         """Salva a lista de livros em um arquivo CSV.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
         partir da lista de livros e salva o DataFrame em um arquivo CSV.
@@ -289,18 +262,20 @@ class BooksToScrape():
                 os.makedirs(output_dir, exist_ok=True)
                 logging.info(f"Directory '{output_dir}' created.")
             except Exception as e:
-                logging.error(f"failed to create directory \
-                              '{output_dir}': {e}")
+                logging.error(
+                    f"failed to create directory \
+                              '{output_dir}': {e}"
+                )
 
         df = pd.DataFrame(books)
-        df.to_csv(filename, index=False, sep=';', encoding='utf-8')
-        logging.info(f"Books saved to {filename}")
+        df.to_csv(
+            os.path.abspath(filename), index=False, sep=";", encoding="utf-8"
+        )  # noqa: E501
+        logging.info(f"Books saved to {os.path.abspath(filename)}")
 
     def save_books_to_json(
-            self,
-            books: list,
-            filename: str = "data/books.json"
-            ) -> None:
+        self, books: list, filename: str = "app/data/books.json"
+    ) -> None:
         """Salva a lista de livros em um arquivo JSON.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
         partir da lista de livros e salva o DataFrame em um arquivo JSON.
@@ -312,8 +287,8 @@ class BooksToScrape():
             Padrão é "books.json".
         """
         df = pd.DataFrame(books)
-        df.to_json(filename, orient='records', lines=True)
-        logging.info(f"Books saved to {filename}")
+        df.to_json(os.path.abspath(filename), orient="records", lines=True)
+        logging.info(f"Books saved to {os.path.abspath(filename)}")
 
 
 if __name__ == "__main__":

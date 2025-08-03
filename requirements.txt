@@ -5,3 +5,7 @@ requests==2.32.3
 flake8==7.3.0
 uvicorn==0.34.3
 streamlit==1.46.1
+SQLAlchemy>=2.0,<3.0
+alembic==1.16.4
+pydantic[email]==2.2.0
+PyJWT==2.10.1
