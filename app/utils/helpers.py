@@ -94,3 +94,10 @@ def get_rating(
         df[name_column].value_counts().get(required_number, default_response)
     )
     return rating
+
+
+def get_price_range(df, name_column, min_price, max_price):
+    result = df.query(
+        f'{name_column} >= {min_price} and {name_column} <= {max_price}'
+        )
+    return result

@@ -8,7 +8,8 @@ from app.api.v1 import (
     stats,
     users,
     auth,
-    scraping
+    scraping,
+    price_range
 )
 
 app = FastAPI(
@@ -22,6 +23,7 @@ app.include_router(root.router)
 app.include_router(categories.router)
 app.include_router(health.router)
 app.include_router(stats.router)
+app.include_router(price_range.router)
 app.include_router(books.router)
 app.include_router(users.router)
 app.include_router(auth.router)
