@@ -2,7 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.api.v1.auth import get_current_user
 from app.models.databases.users import Usuario
 from app.models.databases.base import SessionLocal
-from app.models.schemas.users import UserCreate
+from app.models.schemas.users import (
+    UserCreate,
+    UsersListResponse
+)
 
 router = APIRouter(tags=["Users"])
 
@@ -43,11 +46,17 @@ def post_register_user(user: UserCreate, current_user=Depends(get_current_user))
     return {
         "success": True,
         "message": "Usuário cadastrado com sucesso.",
-        "data": {"id": novo_usuario.id}
+        "data": {
+            "id": novo_usuario.id,
+            "nome": novo_usuario.nome,
+            "email": novo_usuario.email,
+            "ativo": novo_usuario.ativo,
+            "admin": novo_usuario.admin
+            }
         }
 
 
-@router.get("/api/v1/users", tags=["Users"])
+@router.get("/api/v1/users", response_model=UsersListResponse)
 def get_users(current_user=Depends(get_current_user)):
     """### 👥 Listar Usuários
     Retorna uma lista de todos os usuários cadastrados. Apenas administradores podem acessar.
