@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from app.models.databases.users import Usuario, db
-from sqlalchemy.orm import Session
-from app.config import Config
+from app.models.databases.users import Usuario
+from app.models.databases.base import SessionLocal
 from app.models.schemas.users import LoginModel
 from app.models.schemas.auth import TokenResponse
+from app.config import Config
 import jwt
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -26,7 +26,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=401, detail="Token inválido")
 
 
-@router.post('/api/v1/auth/login', response_model=TokenResponse)
+@router.post('/api/v1/auth/login', response_model=TokenResponse, status_code=201)  # noqa: E501
 def login(request: LoginModel):
     """### 🔐 Login
     Este endpoint permite que um usuário faça login no sistema.
@@ -35,7 +35,7 @@ def login(request: LoginModel):
     - Os dados devem ser enviados no corpo da requisição no formato JSON.
     - A resposta incluirá um token JWT que deve ser usado para autenticação em outros endpoints.
     """  # noqa: E501
-    session = Session(bind=db)
+    session = SessionLocal()
     user = session.query(Usuario).filter_by(email=request.email).first()
     session.close()
     if not user or user.senha != request.senha:
@@ -62,7 +62,7 @@ def login(request: LoginModel):
     }
 
 
-@router.post('/api/v1/auth/refresh', response_model=TokenResponse)
+@router.post('/api/v1/auth/refresh', response_model=TokenResponse, status_code=201)
 def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(security)):  # noqa: E501
     """### ♻️ Refresh Token
     Este endpoint permite renovar o token JWT antes do vencimento.
