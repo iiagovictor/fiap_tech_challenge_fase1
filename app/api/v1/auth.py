@@ -62,7 +62,7 @@ def login(request: LoginModel):
     }
 
 
-@router.post('/api/v1/auth/refresh', response_model=TokenResponse, status_code=201)
+@router.post('/api/v1/auth/refresh', response_model=TokenResponse, status_code=201)  # noqa: E501
 def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(security)):  # noqa: E501
     """### ♻️ Refresh Token
     Este endpoint permite renovar o token JWT antes do vencimento.
