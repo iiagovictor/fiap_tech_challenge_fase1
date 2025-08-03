@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import List
 
 
 class UserCreate(BaseModel):
@@ -14,6 +15,21 @@ class LoginModel(BaseModel):
     senha: str = Field(..., min_length=1, description="Senha do usuário")
 
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
+class User(BaseModel):
+    id: int
+    nome: str
+    email: EmailStr
+    ativo: bool
+    admin: bool
+
+
+class UserResponse(BaseModel):
+    success: bool
+    message: str
+    data: User
+
+
+class UsersListResponse(BaseModel):
+    success: bool
+    message: str
+    data: List[User]

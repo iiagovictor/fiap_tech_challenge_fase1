@@ -39,9 +39,42 @@ reusabilidade futura em modelos de machine learning.
    ```bash
    pip install -r requirements.txt
    ```
+
+---
+
+## Como executar a API
+
+Execute o seguinte comando na raiz do projeto para iniciar a API com recarregamento automático:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Acesse a documentação interativa em: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## Trigger do Scraping
+
+Para iniciar manualmente o processo de scraping dos livros, utilize a rota protegida (requer autenticação):
+
+```
+POST /api/v1/scraping/trigger
+```
+
+Esta rota dispara o processo de extração dos dados dos livros e salva os arquivos atualizados em `app/data/books.csv` e `app/data/books.json`. O status do scraping pode ser consultado pela rota:
+
+```
+GET /api/v1/scraping/status/{scraping_id}
+```
+
+---
+
 ## Qualidade de Código
 
 Este projeto segue o padrão PEP8 e utiliza o [Flake8](https://flake8.pycqa.org/) para análise de qualidade e lint do código Python.
+
+A esteira de CI/CD irá validar automaticamente a qualidade do código a cada push, garantindo que o padrão seja seguido.
 
 Para rodar o Flake8 localmente:
 
@@ -51,5 +84,4 @@ flake8 . --exclude=.venv,alembic
 
 ## Componentes
 
-[Sistema de Web Scraping](scripts/README.md)
-[API](api/readme.md)
+[Sistema de Web Scraping](app/utils/README.md)

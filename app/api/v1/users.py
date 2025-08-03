@@ -1,13 +1,17 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.api.v1.auth import get_current_user
-from sqlalchemy.orm import Session
-from app.models.databases.users import Usuario, db
-from app.models.schemas.users import UserCreate
+from app.models.databases.users import Usuario
+from app.models.databases.base import SessionLocal
+from app.models.schemas.users import (
+    UserCreate,
+    UsersListResponse,
+    UserResponse
+)
 
 router = APIRouter(tags=["Users"])
 
 
-@router.post("/api/v1/users/register")
+@router.post("/api/v1/users/register", response_model=UserResponse, status_code=201)  # noqa: E501
 def post_register_user(user: UserCreate, current_user=Depends(get_current_user)):  # noqa: E501
     """### 📝 Registrar Usuário
     Este endpoint permite o registro de um novo usuário no sistema.
@@ -22,7 +26,7 @@ def post_register_user(user: UserCreate, current_user=Depends(get_current_user))
             status_code=403,
             detail="Apenas administradores podem registrar novos usuários."
         )
-    session = Session(bind=db)
+    session = SessionLocal()
     if session.query(Usuario).filter_by(email=user.email).first():
         session.close()
         raise HTTPException(
@@ -43,11 +47,17 @@ def post_register_user(user: UserCreate, current_user=Depends(get_current_user))
     return {
         "success": True,
         "message": "Usuário cadastrado com sucesso.",
-        "data": {"id": novo_usuario.id}
+        "data": {
+            "id": novo_usuario.id,
+            "nome": novo_usuario.nome,
+            "email": novo_usuario.email,
+            "ativo": novo_usuario.ativo,
+            "admin": novo_usuario.admin
+            }
         }
 
 
-@router.get("/api/v1/users", tags=["Users"])
+@router.get("/api/v1/users", response_model=UsersListResponse)
 def get_users(current_user=Depends(get_current_user)):
     """### 👥 Listar Usuários
     Retorna uma lista de todos os usuários cadastrados. Apenas administradores podem acessar.
@@ -63,7 +73,7 @@ def get_users(current_user=Depends(get_current_user)):
             status_code=403,
             detail="Apenas administradores podem listar usuários."
         )
-    session = Session(bind=db)
+    session = SessionLocal()
     usuarios = session.query(Usuario).all()
     session.close()
     users_list = [

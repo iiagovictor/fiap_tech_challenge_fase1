@@ -271,7 +271,7 @@ class BooksToScrape():
     def save_books_to_csv(
             self,
             books: list,
-            filename: str = "data/books.csv"
+            filename: str = "app/data/books.csv"
             ) -> None:
         """Salva a lista de livros em um arquivo CSV.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
@@ -293,13 +293,13 @@ class BooksToScrape():
                               '{output_dir}': {e}")
 
         df = pd.DataFrame(books)
-        df.to_csv(filename, index=False, sep=';', encoding='utf-8')
-        logging.info(f"Books saved to {filename}")
+        df.to_csv(os.path.abspath(filename), index=False, sep=';', encoding='utf-8')  # noqa: E501
+        logging.info(f"Books saved to {os.path.abspath(filename)}")
 
     def save_books_to_json(
             self,
             books: list,
-            filename: str = "data/books.json"
+            filename: str = "app/data/books.json"
             ) -> None:
         """Salva a lista de livros em um arquivo JSON.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
@@ -312,8 +312,8 @@ class BooksToScrape():
             Padrão é "books.json".
         """
         df = pd.DataFrame(books)
-        df.to_json(filename, orient='records', lines=True)
-        logging.info(f"Books saved to {filename}")
+        df.to_json(os.path.abspath(filename), orient='records', lines=True)
+        logging.info(f"Books saved to {os.path.abspath(filename)}")
 
 
 if __name__ == "__main__":

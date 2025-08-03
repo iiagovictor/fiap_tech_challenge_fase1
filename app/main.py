@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.config import Config
 from app.api import root
 from app.api.v1 import (
     books,
@@ -6,13 +7,15 @@ from app.api.v1 import (
     health,
     stats,
     users,
-    auth
+    auth,
+    scraping
 )
 
 app = FastAPI(
-    title="FIAP - Biblioteca Digital API",
-    version="1.0.0",
-    description="API para consulta, pesquisa e análise de livros da Biblioteca Digital FIAP. Permite acesso a informações detalhadas, categorias, estatísticas e health check dos dados."  # noqa: E501
+    title=Config.TITLE,
+    version=Config.VERSION,
+    debug=Config.DEBUG,
+    description=Config.DESCRIPTION
 )
 
 app.include_router(root.router)
@@ -22,3 +25,4 @@ app.include_router(stats.router)
 app.include_router(books.router)
 app.include_router(users.router)
 app.include_router(auth.router)
+app.include_router(scraping.router)
