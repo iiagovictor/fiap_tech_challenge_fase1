@@ -1,9 +1,5 @@
-from sqlalchemy import create_engine, Column, String, Integer, Boolean
-from sqlalchemy.orm import declarative_base
-from app.config import Config
-
-db = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-Base = declarative_base()
+from sqlalchemy import Column, String, Integer, Boolean
+from app.models.databases.base import Base
 
 
 class Usuario(Base):
