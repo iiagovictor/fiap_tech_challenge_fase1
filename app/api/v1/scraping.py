@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, Request
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from app.api.v1.auth import get_current_user
 from app.models.schemas.scraping import (
     ScrapingTriggerResponse,
@@ -7,19 +7,16 @@ from app.models.schemas.scraping import (
 from app.utils.scraping import BooksToScrape
 from app.models.databases.scraping import ScrapingRequest
 from app.models.databases.base import SessionLocal
-from app.utils.app_logger import AppLogger
-from app.models.logger import LoggerModel
 import logging
 import threading
 import uuid
-import time
 
 router = APIRouter(tags=["Scraping"])
 
 scraping_lock = threading.Lock()
 
 
-async def run_scraping_job(request_id):
+def run_scraping_job(request_id):
     session = SessionLocal()
     try:
         req = session.query(ScrapingRequest).filter_by(id=request_id).first()
@@ -35,15 +32,6 @@ async def run_scraping_job(request_id):
             req.status = "done"
             req.message = f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"  # noqa: E501
             session.commit()
-        AppLogger().set_log_message(
-            AppLogger().create_logger("scraping"),
-            LoggerModel(
-                status_code=200,
-                endpoint="/api/v1/scraping/trigger",
-                message=f"Scraping finalizado com sucesso. Livros coletados: {len(books)}",  # noqa: E501
-                type="info"
-            )
-        )
         logging.info(
             f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"
             )
@@ -52,15 +40,6 @@ async def run_scraping_job(request_id):
             req.status = "error"
             req.message = str(e)
             session.commit()
-        AppLogger().set_log_message(
-            AppLogger().create_logger("scraping"),
-            LoggerModel(
-                status_code=500,
-                endpoint="/api/v1/scraping/trigger",
-                message=f"Erro ao executar o scraping: {e}",
-                type="error"
-            )
-        )
         logging.error(f"Erro ao executar o scraping: {e}")
     finally:
         session.close()
@@ -69,7 +48,7 @@ async def run_scraping_job(request_id):
 
 
 @router.post("/api/v1/scraping/trigger", response_model=ScrapingTriggerResponse, status_code=201)  # noqa: E501
-async def trigger_scraping(request: Request, background_tasks: BackgroundTasks, user=Depends(get_current_user)):  # noqa: E501
+async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_current_user)):  # noqa: E501
     """### 🚀 Trigger Web Scraping
     Executa o script de scraping em background.
     Garante que apenas uma execução ocorra por vez.
@@ -85,20 +64,7 @@ async def trigger_scraping(request: Request, background_tasks: BackgroundTasks, 
     - O scraping registra logs de sucesso e erro.
     - É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
-    start_time = time.time()
     if scraping_lock.locked():
-        latency = time.time() - start_time
-        AppLogger().set_log_message(
-            AppLogger().create_logger("scraping"),
-            LoggerModel(
-                status_code=409,
-                endpoint="/api/v1/scraping/trigger",
-                message="Já existe um scraping em andamento.",
-                type="warning",
-                method=request.method,
-                latency=latency
-            )
-        )
         raise HTTPException(
             status_code=409,
             detail="Já existe um scraping em andamento."
@@ -114,18 +80,6 @@ async def trigger_scraping(request: Request, background_tasks: BackgroundTasks, 
     session.add(scraping_req)
     session.commit()
     session.close()
-    latency = time.time() - start_time
-    AppLogger().set_log_message(
-        AppLogger().create_logger("scraping"),
-        LoggerModel(
-            status_code=201,
-            endpoint="/api/v1/scraping/trigger",
-            message=f"Scraping solicitado por {user['sub']}.",
-            type="info",
-            method=request.method,
-            latency=latency
-        )
-    )
     scraping_lock.acquire()
     background_tasks.add_task(run_scraping_job, request_id)
     return {
@@ -140,7 +94,7 @@ async def trigger_scraping(request: Request, background_tasks: BackgroundTasks, 
 
 
 @router.get("/api/v1/scraping/status/{request_id}", response_model=ScrapingStatusResponse)  # noqa: E501
-async def get_scraping_status(request: Request, request_id: str, user=Depends(get_current_user)):  # noqa: E501
+async def get_scraping_status(request_id: str, user=Depends(get_current_user)):
     """### 📊 Status do Scraping
     Consulta o status de uma solicitação de scraping pelo id.
 
@@ -152,39 +106,14 @@ async def get_scraping_status(request: Request, request_id: str, user=Depends(ge
     - O scraping é iniciado por um usuário autenticado.
     - O scraping retorna o usuário que iniciou a solicitação.
     """  # noqa: E501
-    start_time = time.time()
     session = SessionLocal()
     req = session.query(ScrapingRequest).filter_by(id=request_id).first()
     session.close()
     if not req:
-        latency = time.time() - start_time
-        AppLogger().set_log_message(
-            AppLogger().create_logger("scraping"),
-            LoggerModel(
-                status_code=404,
-                endpoint="/api/v1/scraping/status/{request_id}",
-                message=f"ID de scraping não encontrado: {request_id}",
-                type="warning",
-                method=request.method,
-                latency=latency
-            )
-        )
         raise HTTPException(
             status_code=404,
             detail="ID de scraping não encontrado."
             )
-    latency = time.time() - start_time
-    AppLogger().set_log_message(
-        AppLogger().create_logger("scraping"),
-        LoggerModel(
-            status_code=200,
-            endpoint="/api/v1/scraping/status/{request_id}",
-            message=f"Status consultado para o scraping {request_id}.",
-            type="info",
-            method=request.method,
-            latency=latency
-        )
-    )
     return {
         "success": True,
         "message": req.message,
