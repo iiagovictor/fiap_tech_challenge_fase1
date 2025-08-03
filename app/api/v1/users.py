@@ -4,13 +4,14 @@ from app.models.databases.users import Usuario
 from app.models.databases.base import SessionLocal
 from app.models.schemas.users import (
     UserCreate,
-    UsersListResponse
+    UsersListResponse,
+    UserResponse
 )
 
 router = APIRouter(tags=["Users"])
 
 
-@router.post("/api/v1/users/register", status_code=201)
+@router.post("/api/v1/users/register", response_model=UserResponse, status_code=201)  # noqa: E501
 def post_register_user(user: UserCreate, current_user=Depends(get_current_user)):  # noqa: E501
     """### 📝 Registrar Usuário
     Este endpoint permite o registro de um novo usuário no sistema.
