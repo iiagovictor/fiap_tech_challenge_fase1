@@ -10,6 +10,17 @@ router = APIRouter()
 async def get_min_max_price(min: Optional[float] = None,
                             max: Optional[float] = None
                             ):
+    """
+    ### 📂 Pesquisa por livros em uma faixa de preço
+    Este endpoint retorna uma lista de todos os livros que estão dentro de uma faixa de preço
+    minimo e maximo.
+    #### Como usar:
+    - Faça uma requisição GET para `/api/v1/books/price-range`.
+    - Inserir os argumentos min e max, juntamente com o valor desejado para cada
+    parâmetro, como por exemplo: 'price-range?min=22.00&max=28.00', desa forma buscando todos
+    os livros que tem um range de preço entre 22.00 e 28.00.
+    - É necessário enviar o token JWT no header Authorization: Bearer <token>.
+    """  # noqa: E501
     try:
         if len(dados_csv) == 0:
             raise HTTPException(
