@@ -271,7 +271,7 @@ class BooksToScrape():
     def save_books_to_csv(
             self,
             books: list,
-            filename: str = "data/books.csv"
+            filename: str = "../data/books.csv"
             ) -> None:
         """Salva a lista de livros em um arquivo CSV.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
@@ -299,7 +299,7 @@ class BooksToScrape():
     def save_books_to_json(
             self,
             books: list,
-            filename: str = "data/books.json"
+            filename: str = "../data/books.json"
             ) -> None:
         """Salva a lista de livros em um arquivo JSON.
         Esta função utiliza a biblioteca pandas para criar um DataFrame a
