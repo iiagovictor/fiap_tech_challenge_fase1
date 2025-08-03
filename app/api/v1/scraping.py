@@ -30,9 +30,11 @@ def run_scraping_job(request_id):
         scraper.save_books_to_json(books)
         if req:
             req.status = "done"
-            req.message = f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"
+            req.message = f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"  # noqa: E501
             session.commit()
-        logging.info(f"Scraping finalizado com sucesso. Livros coletados: {len(books)}")
+        logging.info(
+            f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"
+            )
     except Exception as e:
         if req:
             req.status = "error"
@@ -46,15 +48,18 @@ def run_scraping_job(request_id):
 
 
 @router.post("/api/v1/scraping/trigger", response_model=ScrapingTriggerResponse, status_code=201)  # noqa: E501
-async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_current_user)):
+async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_current_user)):  # noqa: E501
     """### 🚀 Trigger Web Scraping
     Executa o script de scraping em background e retorna imediatamente.
     Salva os resultados em CSV e JSON na pasta data/.
     Garante que apenas uma execução ocorra por vez.
     Retorna um id para consulta do status.
-    """
+    """  # noqa: E501
     if scraping_lock.locked():
-        raise HTTPException(status_code=409, detail="Já existe um scraping em andamento.")
+        raise HTTPException(
+            status_code=409,
+            detail="Já existe um scraping em andamento."
+            )
     request_id = str(uuid.uuid4())
     session = SessionLocal()
     scraping_req = ScrapingRequest(
@@ -79,16 +84,19 @@ async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_c
     }
 
 
-@router.get("/api/v1/scraping/status/{request_id}", response_model=ScrapingStatusResponse)
+@router.get("/api/v1/scraping/status/{request_id}", response_model=ScrapingStatusResponse)  # noqa: E501
 def get_scraping_status(request_id: str, user=Depends(get_current_user)):
     """### 📊 Status do Scraping
     Consulta o status de uma solicitação de scraping pelo id.
-    """
+    """  # noqa: E501
     session = SessionLocal()
     req = session.query(ScrapingRequest).filter_by(id=request_id).first()
     session.close()
     if not req:
-        raise HTTPException(status_code=404, detail="ID de scraping não encontrado.")
+        raise HTTPException(
+            status_code=404,
+            detail="ID de scraping não encontrado."
+            )
     return {
         "success": True,
         "message": req.message,
@@ -97,6 +105,6 @@ def get_scraping_status(request_id: str, user=Depends(get_current_user)):
             "id": req.id,
             "created_at": req.created_at,
             "updated_at": req.updated_at,
-            "trigger_by_user": req.trigger_by_user if req.trigger_by_user else "Desconhecido"
+            "trigger_by_user": req.trigger_by_user
         },
     }

@@ -9,5 +9,5 @@ class ScrapingRequest(Base):
     status = Column(String, nullable=False)
     message = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())  # noqa: E501
     trigger_by_user = Column(String, nullable=True)
