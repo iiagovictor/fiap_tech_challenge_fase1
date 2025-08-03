@@ -1,27 +1,24 @@
 from fastapi import FastAPI
+from app.api import root
 from app.api.v1 import (
-    endpoint_categoria,
-    endpoint_health,
-    endpoint_retorna_a_titulo_categoria,
-    endpoint_retorna_books_por_id,
-    endpoint_overview,
-    endpoint_lista_livros_disponiveis,
-    endpoint_avaliacao_livros,
-    endpoint_status_categorias
+    books,
+    categories,
+    health,
+    stats,
+    users,
+    auth
 )
-
 
 app = FastAPI(
-    title="Our FastAPI API",
+    title="FIAP - Biblioteca Digital API",
     version="1.0.0",
-    description="API de Consultas de Livros com FASTAPI"
+    description="API para consulta, pesquisa e análise de livros da Biblioteca Digital FIAP. Permite acesso a informações detalhadas, categorias, estatísticas e health check dos dados."  # noqa: E501
 )
 
-app.include_router(endpoint_categoria.router)
-app.include_router(endpoint_health.router)
-app.include_router(endpoint_avaliacao_livros.router)
-app.include_router(endpoint_retorna_a_titulo_categoria.router)
-app.include_router(endpoint_retorna_books_por_id.router)
-app.include_router(endpoint_overview.router)
-app.include_router(endpoint_lista_livros_disponiveis.router)
-app.include_router(endpoint_status_categorias.router)
+app.include_router(root.router)
+app.include_router(categories.router)
+app.include_router(health.router)
+app.include_router(stats.router)
+app.include_router(books.router)
+app.include_router(users.router)
+app.include_router(auth.router)
