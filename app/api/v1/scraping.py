@@ -36,6 +36,7 @@ def run_scraping_job(request_id):
             f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"
             )
     except Exception as e:
+        session.rollback()
         if req:
             req.status = "error"
             req.message = str(e)
