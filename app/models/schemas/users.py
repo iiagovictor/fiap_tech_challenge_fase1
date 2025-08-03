@@ -12,8 +12,3 @@ class UserCreate(BaseModel):
 class LoginModel(BaseModel):
     email: EmailStr = Field(..., description="E-mail do usuário")
     senha: str = Field(..., min_length=1, description="Senha do usuário")
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
