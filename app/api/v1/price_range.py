@@ -1,14 +1,17 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.api.v1.auth import get_current_user
 from typing import Optional
 from app.api.root import dados_csv
 from app.utils import helpers
 
-router = APIRouter()
+
+router = APIRouter(tags=["price-range"])
 
 
 @router.get("/api/v1/books/price-range")
 async def get_min_max_price(min: Optional[float] = None,
-                            max: Optional[float] = None
+                            max: Optional[float] = None,
+                            user=Depends(get_current_user)
                             ):
     """
     ### 📂 Pesquisa por livros em uma faixa de preço
