@@ -26,6 +26,7 @@ if config.config_file_name is not None:
 from app.models.databases.base import Base
 from app.models.databases.users import Usuario
 from app.models.databases.scraping import ScrapingRequest
+from app.models.databases.logs import Log
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

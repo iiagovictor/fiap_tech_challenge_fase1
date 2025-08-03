@@ -7,12 +7,15 @@ from app.models.schemas.books import (
     BooksSearchResponse,
     BooksListResponse
 )
+from app.utils.app_logger import AppLogger
+from app.models.logger import LoggerModel
+import time
 
 router = APIRouter(tags=["Core"])
 
 
 @router.get("/api/v1/books", response_model=BooksListResponse)
-async def get_books(user=Depends(get_current_user)):
+async def get_books(request: Request, user=Depends(get_current_user)):
     """### 📚 Listar Livros
     Este endpoint retorna uma lista de todos os livros disponíveis na coleção.
     Esta lista é ordenada alfabeticamente e contém apenas os títulos dos livros.
@@ -22,14 +25,39 @@ async def get_books(user=Depends(get_current_user)):
     -   A resposta será uma lista de títulos de livros ordenados alfabeticamente.
     -   É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
+    start_time = time.time()
     try:
         books = get_unique_items(dados_csv, "title")
         books = sorted(books, key=lambda x: x.lower())
         if len(books) == 0:
+            latency = time.time() - start_time
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=400,
+                    endpoint="/api/v1/books",
+                    message="Arquivo CSV não está populado.",
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=400,
                 detail="Arquivo CSV não está populado."
             )
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=200,
+                endpoint="/api/v1/books",
+                message="Livros retornados com sucesso.",
+                type="info",
+                method=request.method,
+                latency=latency
+            )
+        )
         return {
             "success": True,
             "message": "Livros retornadas com sucesso.",
@@ -39,8 +67,19 @@ async def get_books(user=Depends(get_current_user)):
         }
     except HTTPException as http_error:
         raise http_error
-
     except Exception as error:
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=500,
+                endpoint="/api/v1/books",
+                message=f"Erro interno: {error}",
+                type="error",
+                method=request.method,
+                latency=latency
+            )
+        )
         raise HTTPException(
             status_code=500,
             detail=f"Erro interno : {error}"
@@ -88,10 +127,23 @@ async def get_search_books(
     -   Se o query parameter for inválido, a API retornará um erro 400 com uma mensagem detalhando os parâmetros permitidos.
     -   É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
+    start_time = time.time()
     allowed_params = {"title", "category"}
     query_params = set(request.query_params.keys())
     extras = query_params - allowed_params
     if extras:
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=400,
+                endpoint="/api/v1/books/search",
+                message=f"Parâmetros não permitidos: {', '.join(extras)}.",
+                type="warning",
+                method=request.method,
+                latency=latency
+            )
+        )
         raise HTTPException(
             status_code=400,
             detail=(
@@ -99,16 +151,38 @@ async def get_search_books(
                 "Somente são aceitos: title, category."
             )
         )
-
     if not title_param and not category_param:
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=400,
+                endpoint="/api/v1/books/search",
+                message="Nenhum parâmetro de busca fornecido.",
+                type="warning",
+                method=request.method,
+                latency=latency
+            )
+        )
         raise HTTPException(
             status_code=400,
             detail="Pelo menos um parâmetro de busca deve ser fornecido (title ou category)."  # noqa: E501
         )
-
     if category_param:
         categorias_validas = get_unique_items(dados_csv, "category")
         if category_param not in categorias_validas:
+            latency = time.time() - start_time
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=400,
+                    endpoint="/api/v1/books/search",
+                    message=f"Categoria '{category_param}' não é permitida.",
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=400,
                 detail=(
@@ -116,9 +190,7 @@ async def get_search_books(
                     f"Categorias válidas: {categorias_validas}"
                 )
             )
-
     df_filter = dados_csv
-
     if title_param:
         df_filter = df_filter[
             df_filter["title"].str.contains(
@@ -127,14 +199,24 @@ async def get_search_books(
                 na=False
             )
         ]
-
     if category_param:
         df_filter = df_filter[
             df_filter["category"].str.lower() == category_param.lower()
         ]
-
     if df_filter.empty:
+        latency = time.time() - start_time
         if title_param and category_param:
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=404,
+                    endpoint="/api/v1/books/search",
+                    message="Livro não encontrado ou não pertence à categoria informada.",  # noqa: E501
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=404,
                 detail=(
@@ -142,16 +224,49 @@ async def get_search_books(
                 )
             )
         elif title_param:
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=404,
+                    endpoint="/api/v1/books/search",
+                    message="Livro não encontrado.",
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=404,
                 detail="Livro não encontrado."
             )
         else:
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=404,
+                    endpoint="/api/v1/books/search",
+                    message="Nenhum livro encontrado para a categoria informada.",  # noqa: E501
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=404,
                 detail="Nenhum livro encontrado para a categoria informada."
             )
-
+    latency = time.time() - start_time
+    AppLogger().set_log_message(
+        AppLogger().create_logger("books"),
+        LoggerModel(
+            status_code=200,
+            endpoint="/api/v1/books/search",
+            message="Resultado encontrado com sucesso.",
+            type="info",
+            method=request.method,
+            latency=latency
+        )
+    )
     return {
         "success": True,
         "message": "Resultado encontrado com sucesso.",
@@ -160,7 +275,7 @@ async def get_search_books(
 
 
 @router.get("/api/v1/books/top-rated")
-async def get_top_rated_books(user=Depends(get_current_user)):
+async def get_top_rated_books(request: Request, user=Depends(get_current_user)):  # noqa: E501
     """### 🌟 Livros Mais Bem Avaliados
     Este endpoint retorna os livros mais bem avaliados, ou seja, aqueles que possuem a maior
     nota de avaliação (review_rating) igual a 5.
@@ -170,8 +285,21 @@ async def get_top_rated_books(user=Depends(get_current_user)):
     - A resposta incluirá um dicionário com os títulos dos livros e suas respectivas avaliações
     - É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
+    start_time = time.time()
     try:
         if len(dados_csv) == 0:
+            latency = time.time() - start_time
+            AppLogger().set_log_message(
+                AppLogger().create_logger("books"),
+                LoggerModel(
+                    status_code=400,
+                    endpoint="/api/v1/books/top-rated",
+                    message="Arquivo CSV não está populado.",
+                    type="warning",
+                    method=request.method,
+                    latency=latency
+                )
+            )
             raise HTTPException(
                 status_code=400,
                 detail="Arquivo CSV não está populado."
@@ -179,7 +307,18 @@ async def get_top_rated_books(user=Depends(get_current_user)):
         top_books = dados_csv[['title', 'review_rating']].query(
             "review_rating == 5")
         top_books = top_books.set_index('title')['review_rating'].to_dict()
-
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=200,
+                endpoint="/api/v1/books/top-rated",
+                message="Livros mais bem avaliados retornados com sucesso.",
+                type="info",
+                method=request.method,
+                latency=latency
+            )
+        )
         return {
                 "success": True,
                 "Messamessagege": "Valores retornados com sucesso",
@@ -187,8 +326,19 @@ async def get_top_rated_books(user=Depends(get_current_user)):
                     "Top rated books": top_books
                 }
         }
-
     except Exception as error:
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=500,
+                endpoint="/api/v1/books/top-rated",
+                message=f"Erro interno: {error}",
+                type="error",
+                method=request.method,
+                latency=latency
+            )
+        )
         raise HTTPException(
             status_code=500,
             detail=f"Erro interno : {error}"
@@ -196,7 +346,7 @@ async def get_top_rated_books(user=Depends(get_current_user)):
 
 
 @router.get("/api/v1/books/{book_id}", response_model=BookDetailResponse)
-async def get_book_id(book_id: int, user=Depends(get_current_user)):
+async def get_book_id(request: Request, book_id: int, user=Depends(get_current_user)):  # noqa: E501
     """### 📖 Detalhes do Livro por ID
     Este endpoint retorna os detalhes de um livro específico com base no seu ID.
 
@@ -206,8 +356,21 @@ async def get_book_id(book_id: int, user=Depends(get_current_user)):
     -   Se o ID do livro não for encontrado, um erro 404 será retornado.
     -   É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
+    start_time = time.time()
     if 0 < book_id <= len(dados_csv):
         resultado = dados_csv[dados_csv["book_id"] == book_id]
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=200,
+                endpoint="/api/v1/books/{book_id}",
+                message=f"Livro encontrado com sucesso. ID: {book_id}",
+                type="info",
+                method=request.method,
+                latency=latency
+            )
+        )
         return {
             "success": True,
             "message": "Livro encontrado com sucesso.",
@@ -216,6 +379,18 @@ async def get_book_id(book_id: int, user=Depends(get_current_user)):
             }
         }
     else:
+        latency = time.time() - start_time
+        AppLogger().set_log_message(
+            AppLogger().create_logger("books"),
+            LoggerModel(
+                status_code=404,
+                endpoint="/api/v1/books/{book_id}",
+                message=f"Livro não encontrado. ID: {book_id}",
+                type="warning",
+                method=request.method,
+                latency=latency
+            )
+        )
         raise HTTPException(
             status_code=404,
             detail="Livro não encontrado."

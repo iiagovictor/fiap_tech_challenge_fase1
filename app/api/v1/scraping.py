@@ -36,6 +36,7 @@ def run_scraping_job(request_id):
             f"Scraping finalizado com sucesso. Livros coletados: {len(books)}"
             )
     except Exception as e:
+        session.rollback()
         if req:
             req.status = "error"
             req.message = str(e)
@@ -94,7 +95,7 @@ async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_c
 
 
 @router.get("/api/v1/scraping/status/{request_id}", response_model=ScrapingStatusResponse)  # noqa: E501
-def get_scraping_status(request_id: str, user=Depends(get_current_user)):
+async def get_scraping_status(request_id: str, user=Depends(get_current_user)):
     """### 📊 Status do Scraping
     Consulta o status de uma solicitação de scraping pelo id.
 
