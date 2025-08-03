@@ -50,10 +50,19 @@ def run_scraping_job(request_id):
 @router.post("/api/v1/scraping/trigger", response_model=ScrapingTriggerResponse, status_code=201)  # noqa: E501
 async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_current_user)):  # noqa: E501
     """### 🚀 Trigger Web Scraping
-    Executa o script de scraping em background e retorna imediatamente.
-    Salva os resultados em CSV e JSON na pasta data/.
+    Executa o script de scraping em background.
     Garante que apenas uma execução ocorra por vez.
     Retorna um id para consulta do status.
+    #### Como usar:
+    - Faça uma requisição POST para `/api/v1/scraping/trigger`.
+    - Você receberá um `id` para consultar da solicitação de scraping.
+    - O status pode ser consultado pelo endpoint `/api/v1/scraping/status/{request_id}`.
+    - O scraping coleta dados de livros, salva em CSV e JSON na pasta `data/`.
+    - O scraping é executado apenas uma vez por vez, garantindo que não haja concorrência.
+    - O scraping é iniciado por um usuário autenticado.
+    - O scraping é executado em background para não bloquear a API.
+    - O scraping registra logs de sucesso e erro.
+    - É necessário enviar o token JWT no header Authorization: Bearer <token>.
     """  # noqa: E501
     if scraping_lock.locked():
         raise HTTPException(
@@ -88,6 +97,14 @@ async def trigger_scraping(background_tasks: BackgroundTasks, user=Depends(get_c
 def get_scraping_status(request_id: str, user=Depends(get_current_user)):
     """### 📊 Status do Scraping
     Consulta o status de uma solicitação de scraping pelo id.
+
+    #### Como usar:
+    - Faça uma requisição GET para `/api/v1/scraping/status/{request_id}`.
+    - O `request_id` é o id retornado pelo endpoint de trigger.
+    - Retorna o status atual, mensagem e dados do scraping.
+    - O scraping pode estar em status: `pending`, `running`, `done` ou `error`.
+    - O scraping é iniciado por um usuário autenticado.
+    - O scraping retorna o usuário que iniciou a solicitação.
     """  # noqa: E501
     session = SessionLocal()
     req = session.query(ScrapingRequest).filter_by(id=request_id).first()
