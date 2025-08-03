@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 from app.utils.helpers import get_csv_data
+import os
 
 router = APIRouter(tags=["Core"])
 
-dados_csv = get_csv_data('./data/books.csv')
+dados_csv = get_csv_data(os.path.join(os.path.dirname(__file__), "../data/books.csv"))  # noqa: E501
 
 
 @router.get("/")
