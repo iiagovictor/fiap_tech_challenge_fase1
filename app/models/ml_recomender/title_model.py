@@ -82,19 +82,19 @@ def content_recommender(title: str,
 
 # --- Fluxo Principal de Execução para Geração de PKL Único ---
 if __name__ == "__main__":
-    # 1. Tratar os dados brutos
+    # 1. Trata os dados brutos
     df_tratado = tratar_dados_livros(df_bruto)
 
-    # 2. Preparar o modelo de recomendação
+    # 2. Prepara o modelo de recomendação
     df_model_final, cosine_sim_matrix_final, indices_final = preparar_modelo_recomendacao(df_tratado)
 
-    # 3. Criar um dicionário com todos os componentes
+    # 3. Cria um dicionário com todos os componentes
     model_components = {
         'df_model': df_model_final,
         'cosine_sim_matrix': cosine_sim_matrix_final,
         'indices': indices_final
     }
 
-    # 4. Salvar o dicionário inteiro em um único arquivo .pkl com joblib
+    # 4. Salva o dicionário inteiro em um único arquivo .pkl com joblib
     joblib.dump(model_components, "modelo_recomendacao.pkl")
     print("Todos os componentes do modelo foram salvos em 'modelo_recomendacao.pkl.pkl'.")
