@@ -1,8 +1,6 @@
 import joblib
-import pandas as pd
 from typing import List
 from pathlib import Path
-import numpy as np
 
 model_components = None
 
@@ -13,14 +11,15 @@ model_path = project_root / "modelo_recomendacao.pkl"
 try:
     if model_path.exists():
         model_components = joblib.load(model_path)
-        print("Todos os componentes do modelo foram carregados com sucesso no serviço!")
+        print("Todos os componentes do modelo foram carregados com sucesso no serviço!")  # noqa: E501
     else:
-        raise FileNotFoundError(f"Arquivo do modelo não encontrado: {model_path}")
+        raise FileNotFoundError(f"Arquivo do modelo não encontrado: {model_path}")  # noqa: E501
 except FileNotFoundError as e:
     print(f"ERRO: {e}. O serviço de recomendação não estará disponível.")
 except Exception as e:
     print(f"ERRO: Não foi possível carregar os componentes do modelo: {e}")
     model_components = None
+
 
 def get_recommendations_from_title(title: str) -> List[str]:
     """

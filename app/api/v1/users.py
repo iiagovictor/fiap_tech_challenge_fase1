@@ -23,7 +23,7 @@ def post_register_user(user: UserCreate, current_user=Depends(get_current_user))
     """  # noqa: E501
     if not current_user.get("admin", False):
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Apenas administradores podem registrar novos usuários."
         )
     session = SessionLocal()
@@ -70,7 +70,7 @@ def get_users(current_user=Depends(get_current_user)):
     """  # noqa: E501
     if not current_user.get("admin", False):
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Apenas administradores podem listar usuários."
         )
     session = SessionLocal()
