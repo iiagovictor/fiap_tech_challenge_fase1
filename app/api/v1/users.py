@@ -39,7 +39,7 @@ async def post_register_user(request: Request, user: UserCreate, current_user=De
             )
         )
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Apenas administradores podem registrar novos usuários."
         )
     session = SessionLocal()
@@ -123,7 +123,7 @@ async def get_users(request: Request, current_user=Depends(get_current_user)):
             )
         )
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Apenas administradores podem listar usuários."
         )
     session = SessionLocal()

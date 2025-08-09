@@ -9,7 +9,8 @@ from app.api.v1 import (
     users,
     auth,
     scraping,
-    price_range
+    price_range,
+    recommender
 )
 
 app = FastAPI(
@@ -20,6 +21,7 @@ app = FastAPI(
 )
 
 app.include_router(root.router)
+app.include_router(recommender.router)
 app.include_router(categories.router)
 app.include_router(health.router)
 app.include_router(stats.router)
