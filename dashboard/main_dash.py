@@ -1,46 +1,103 @@
+import os
+import sys
 import streamlit as st
 import pandas as pd
-import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.models.databases.base import SessionLocal
+from app.models.databases.logs import Log
 
-
-class BookDashboard:
-    def __init__(self, csv_path, delimiter=";"):
-        self.csv_path = csv_path
-        self.delimiter = delimiter
+class RequestDashboard:
+    def __init__(self):
         self.df = self.load_data()
 
     def load_data(self):
         try:
-            df = pd.read_csv(self.csv_path, delimiter=self.delimiter)
+            session = SessionLocal()
+            logs = session.query(Log).all()
+            data = [
+                {
+                    "id": log.id,
+                    "time": log.time,
+                    "status_code": log.status_code,
+                    "endpoint": log.endpoint,
+                    "message": log.message,
+                    "type": log.type,
+                    "method": log.method,
+                    "latency": log.latency
+                }
+            for log in logs
+            ]
+            df = pd.DataFrame(data)
+            return df
         except Exception as e:
-            st.error(f"Erro ao ler CSV: {e}")
-            df = pd.DataFrame()
-        return df
+            st.error(f"Erro ao carregar dados do banco: {e}")
+            return pd.DataFrame()
 
-    def livro_categoria(self):
+    def num_requests_per_endpoint(self):
         if not self.df.empty:
-            return self.df.groupby('category').size() \
-                .reset_index(name='quantity')
+            return self.df['endpoint'].value_counts().reset_index() \
+                .rename(columns={'index': 'endpoint', })
         return pd.DataFrame()
-
-    def preco_medio_categoria(self):
+    
+    def status_code_distribution(self):
         if not self.df.empty:
-            return self.df.groupby('category')['price_including_tax'].mean() \
-                .reset_index(name='average_price')
+            return self.df['status_code'].value_counts().reset_index() \
+                .rename(columns={'index': 'status_code'})
         return pd.DataFrame()
-
-
+    
+    def average_latency_per_endpoint(self):
+        if not self.df.empty:
+            return self.df.groupby('endpoint')['latency'].mean().reset_index() \
+                .rename(columns={'latency': 'average_latency'})
+        return pd.DataFrame()
+    
+    def total_requests_over_time(self):
+        if not self.df.empty:
+            self.df['time'] = pd.to_datetime(self.df['time'])
+            return self.df.set_index('time').resample('D').size().reset_index(name='count')
+        return pd.DataFrame()
+    
 def main():
-    dashboard = BookDashboard(os.path.join(os.path.dirname(__file__), "../app/data/books.csv"))  # noqa: E501
-    livro_categoria = dashboard.livro_categoria()
-    preco_categoria = dashboard.preco_medio_categoria()
+    st.title("Dashboard de Requisições")
+    
+    dash = RequestDashboard()
+    
+    col2, col3 = st.columns(2)
+    col4, col5 = st.columns(2)
+    
+    
+    with col2:
+        teste = dash.num_requests_per_endpoint()
+        st.subheader("Número de requisições por endpoint")
+        st.bar_chart(teste, x='endpoint', y='count')
+    
+    with col3:
+        st.subheader("Distribuição dos códigos de status")
+        status_dist = dash.status_code_distribution()   
+        st.bar_chart(status_dist, x='status_code', y='count')
+        
+    with col4:
+        st.subheader("Latência média por endpoint")
+        avg_latency = dash.average_latency_per_endpoint()   
+        st.bar_chart(avg_latency, x='endpoint', y='average_latency')
+    
+    with col5:
+        st.subheader("Total de requisições ao longo do tempo")
+        total_requests = dash.total_requests_over_time()
+        st.line_chart(total_requests, x='time', y='count')
+    
+    
+    
+    # dashboard = BookDashboard(os.path.join(os.path.dirname(__file__), "../app/data/books.csv"))  # noqa: E501
+    # livro_categoria = dashboard.livro_categoria()
+    # preco_categoria = dashboard.preco_medio_categoria()
 
-    st.title("Dashboard de Livros")
-    st.subheader("Quantidade de livros por categoria")
-    st.bar_chart(livro_categoria, x='category', y='quantity')
+    # st.title("Dashboard de Livros")
+    # st.subheader("Quantidade de livros por categoria")
+    # st.bar_chart(livro_categoria, x='category', y='quantity')
 
-    st.subheader("Preço médio por categoria")
-    st.bar_chart(preco_categoria, x='category', y='average_price')
+    # st.subheader("Preço médio por categoria")
+    # st.bar_chart(preco_categoria, x='category', y='average_price')
 
 
 if __name__ == "__main__":
