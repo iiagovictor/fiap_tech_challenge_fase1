@@ -6,6 +6,14 @@
 
 Você foi contratado(a) como Engenheiro(a) de Machine Learning para um projeto de recomendação de livros. A empresa está em sua fase inicial e ainda não possui uma base de dados estruturada. Seu primeiro desafio será montar a infraestrutura de extração, transformação e disponibilização de dados via API pública para que cientistas de dados e serviços de recomendação possam usar esses dados com facilidade. Assim, seu objetivo será desenvolver um pipeline completo de dados e uma API pública para servir esses dados, pensando na escalabilidade e reusabilidade futura em modelos de machine learning.
 
+
+## Arquitetura da Solução
+**Arquitetura do sistema**
+![Arquitetura Chamadas](img/arquitetura_chamadas.png)
+
+**Arquitetura para MLOps**
+![Arquitetura MLOps](img/arquitetura_ml.png)
+
 ## Requisitos
 
 - Python 3.8+
@@ -90,6 +98,10 @@ streamlit run dashboard/main_dash.py
 ```
 
 O dashboard estará disponível em: [http://localhost:8501](http://localhost:8501)
+
+
+**Prévia dos Dashboards**
+![Dashboards](img/streamlit.png)
 
 ---
 
