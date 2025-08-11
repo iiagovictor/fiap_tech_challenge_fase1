@@ -7,14 +7,13 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app /app/app
-
 COPY banco.db /app/
 COPY alembic.ini /app/
 COPY modelo_recomendacao.pkl /app/
 COPY dashboard /app/dashboard
-COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
