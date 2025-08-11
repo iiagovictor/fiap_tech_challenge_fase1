@@ -6,7 +6,7 @@ from app.models.logger import LoggerModel
 import os
 import time
 
-router = APIRouter(tags=["Core"])
+router = APIRouter(tags=["Home"])
 
 dados_csv = get_csv_data(os.path.join(os.path.dirname(__file__), "../data/books.csv"))  # noqa: E501
 

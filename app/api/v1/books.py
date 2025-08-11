@@ -11,7 +11,7 @@ from app.utils.app_logger import AppLogger
 from app.models.logger import LoggerModel
 import time
 
-router = APIRouter(tags=["Core"])
+router = APIRouter(tags=["Books"])
 
 
 @router.get("/api/v1/books", response_model=BooksListResponse)

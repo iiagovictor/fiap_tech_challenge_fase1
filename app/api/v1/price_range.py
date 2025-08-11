@@ -8,7 +8,7 @@ from app.models.logger import LoggerModel
 import time
 
 
-router = APIRouter(tags=["Insights"])
+router = APIRouter(tags=["Books"])
 
 
 @router.get("/api/v1/books/price-range")
