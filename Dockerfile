@@ -10,7 +10,7 @@ COPY app /app/app
 
 COPY banco.db /app/
 COPY alembic.ini /app/
-COPY model.pkl /app/
+COPY modelo_recomendacao.pkl /app/
 
 EXPOSE 8000 8501
 
