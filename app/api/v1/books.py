@@ -65,8 +65,6 @@ async def get_books(request: Request, user=Depends(get_current_user)):
                 "books": books
             }
         }
-    except HTTPException as http_error:
-        raise http_error
     except Exception as error:
         latency = time.time() - start_time
         AppLogger().set_log_message(
