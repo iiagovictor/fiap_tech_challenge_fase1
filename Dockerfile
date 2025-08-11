@@ -17,4 +17,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
-CMD bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 & streamlit run /app/dashboard/main_dash.py --server.port 8501 --server.address 127.0.0.1 & nginx -g 'daemon off;'"
+CMD bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 & PYTHONPATH=/app streamlit run /app/dashboard/main_dash.py --server.port 8501 --server.address 127.0.0.1 & nginx -g 'daemon off;'"

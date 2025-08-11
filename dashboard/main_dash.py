@@ -1,11 +1,7 @@
-import os
-import sys
 import streamlit as st
 import pandas as pd
 from app.models.databases.base import SessionLocal
 from app.models.databases.logs import Log
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 class RequestDashboard:
