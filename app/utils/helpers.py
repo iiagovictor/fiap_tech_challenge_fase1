@@ -21,6 +21,7 @@ def get_csv_data(
         Se ocorrer um erro ao ler o arquivo CSV, a função retornará uma exceção.
     """  # noqa: E501
     try:
+        print(f"Lendo arquivo CSV de: {path_file}")
         df = pd.read_csv(path_file, sep=';')
         # A coluna de data não vinha com o formato de data, vinha como object
         df['created_at'] = pd.to_datetime(
