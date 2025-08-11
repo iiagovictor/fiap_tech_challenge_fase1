@@ -2,10 +2,9 @@ import os
 import sys
 import streamlit as st
 import pandas as pd
-from app.models.databases.base import SessionLocal
-from app.models.databases.logs import Log
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.models.databases.base import SessionLocal  # noqa: E402
+from app.models.databases.logs import Log  # noqa: E402
 
 
 class RequestDashboard:
@@ -105,7 +104,6 @@ def main():
         st.subheader("Total de requisições ao longo do tempo")
         total_requests = dash.total_requests_over_time()
         st.line_chart(total_requests, x='time', y='count')
-
 
 if __name__ == "__main__":
     main()
