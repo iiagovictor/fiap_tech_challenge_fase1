@@ -8,7 +8,7 @@ from app.utils.app_logger import AppLogger
 from app.models.logger import LoggerModel
 import time
 
-router = APIRouter(tags=["Core"])
+router = APIRouter(tags=["Health"])
 
 
 @router.get("/api/v1/health", response_model=HealthResponse)

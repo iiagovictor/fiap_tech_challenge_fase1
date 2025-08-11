@@ -9,7 +9,7 @@ from app.utils.app_logger import AppLogger
 from app.models.logger import LoggerModel
 import time
 
-router = APIRouter(tags=["Core"])
+router = APIRouter(tags=["Categories"])
 
 
 @router.get("/api/v1/categories", response_model=CategoriesResponse)
