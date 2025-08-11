@@ -12,9 +12,10 @@ COPY banco.db /app/
 COPY alembic.ini /app/
 COPY modelo_recomendacao.pkl /app/
 COPY dashboard /app/dashboard
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 8000 8501
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-RUN ls -l /app/dashboard
+EXPOSE 80
 
-CMD bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 & streamlit run /app/dashboard/main_dash.py --server.port 8501 --server.address 0.0.0.0 & wait"
+CMD bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 & streamlit run /app/dashboard/main_dash.py --server.port 8501 --server.address 127.0.0.1 & nginx -g 'daemon off;'"
