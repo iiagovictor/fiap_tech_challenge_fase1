@@ -28,7 +28,6 @@ async def get_books(request: Request, user=Depends(get_current_user)):
     start_time = time.time()
     try:
         books = get_unique_items(dados_csv, "title")
-        print(books.head(10))
         books = sorted(books, key=lambda x: x.lower())
         if len(books) == 0:
             latency = time.time() - start_time
