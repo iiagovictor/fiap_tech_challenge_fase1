@@ -23,9 +23,6 @@ def get_csv_data(
     try:
         print(f"Lendo arquivo CSV de: {path_file}")
         df = pd.read_csv(path_file, sep=';')
-        print("Arquivo CSV lido com sucesso.")
-        print(f"Colunas do DataFrame: {df.columns.tolist()}")
-        print(f"Primeiras 5 linhas do DataFrame:\n{df.head()}")
         # A coluna de data não vinha com o formato de data, vinha como object
         df['created_at'] = pd.to_datetime(
             df['created_at'], errors='coerce'
